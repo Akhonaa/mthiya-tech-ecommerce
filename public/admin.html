@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mthiya Tech - Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .admin-layout { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .panel h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+    .form-group { margin-bottom: 0.9rem; }
+    .form-group label { display: block; font-size: 0.82rem; margin-bottom: 0.3rem; color: var(--text-muted); }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+    .form-row { display: flex; gap: 0.75rem; }
+    .form-row .form-group { flex: 1; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
+    td input {
+      width: 80px;
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-size: 0.85rem;
+    }
+    .row-actions { display: flex; gap: 0.5rem; }
+    .row-actions button {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.78rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .row-actions button.save { border-color: var(--success); color: var(--success); }
+    .row-actions button.delete { border-color: var(--danger); color: var(--danger); }
+    .inactive-row { opacity: 0.4; }
+
+        select.status-select {
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-size: 0.82rem;
+    }
+    td.issue-cell { max-width: 220px; font-size: 0.85rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+
+  <div class="container" id="adminContent">
+    <div class="page-header">
+      <h1>Admin Panel</h1>
+      <p>Manage your product catalog, prices, and inventory.</p>
+    </div>
+
+    <div class="admin-layout">
+      <div class="panel">
+        <h2>Add New Product</h2>
+        <form id="addProductForm">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="newName" required />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="newDescription" rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Price (Rand)</label>
+              <input type="number" id="newPrice" step="0.01" required />
+            </div>
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number" id="newStock" value="0" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="newCategory" placeholder="e.g. peripherals" />
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="text" id="newImageUrl" placeholder="https://..." />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Add Product</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Product Catalog</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price (R)</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+        <div class="panel" style="margin-top: 2rem;">
+      <h2>Repair Bookings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Device</th>
+            <th>Issue</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Submitted</th>
+          </tr>
+        </thead>
+        <tbody id="bookingsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BoltForge PC — Order Confirmation</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .status-wrapper {
+      max-width: 480px;
+      margin: 4rem auto;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    .status-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .status-wrapper h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .status-wrapper p { color: var(--text-muted); margin-bottom: 1.5rem; }
+    .order-summary {
+      text-align: left;
+      background: var(--bg-dark);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .order-summary div { display: flex; justify-content: space-between; padding: 0.3rem 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+
+  <div class="status-wrapper" id="statusWrapper">
+    <div class="status-icon">⏳</div>
+    <h1>Verifying your payment...</h1>
+    <p>Please wait a moment.</p>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/checkout-success.js"></script>
+</body>
+</html>

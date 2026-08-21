@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mthiya Tech — Book a Repair</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .repairs-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .repairs-layout { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 0.35rem; color: var(--text-muted); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: var(--accent);
+    }
+    .status-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .status-pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+    .status-in_progress { background: rgba(0, 212, 255, 0.15); color: var(--accent-secondary); }
+    .status-completed { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+    .booking-item {
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 0;
+    }
+    .booking-item:last-child { border-bottom: none; }
+    .booking-item .device { font-weight: 600; margin-bottom: 0.25rem; }
+    .booking-item .issue { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .booking-item .meta { font-size: 0.75rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Book a Repair</h1>
+      <p>Tell us what's wrong — we'll get back to you to arrange drop-off or collection.</p>
+    </div>
+
+    <div class="repairs-layout">
+      <div class="panel">
+        <h2 style="margin-bottom: 1.2rem; font-size: 1.1rem;">New Booking</h2>
+        <form id="bookingForm">
+          <div class="form-group">
+            <label>Device Type</label>
+            <select id="deviceType" required>
+              <option value="">Select a device...</option>
+              <option value="Desktop PC">Desktop PC</option>
+              <option value="Gaming Laptop">Gaming Laptop</option>
+              <option value="PS5 Controller">PS5 Controller</option>
+              <option value="Xbox Controller">Xbox Controller</option>
+              <option value="Nintendo Switch">Nintendo Switch</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Contact Phone</label>
+            <input type="tel" id="contactPhone" placeholder="082 123 4567" required />
+          </div>
+          <div class="form-group">
+            <label>Describe the Issue</label>
+            <textarea id="issueDescription" rows="4" placeholder="e.g. Right analog stick drifts on its own, started last week..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Booking</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2 style="margin-bottom: 1.2rem; font-size: 1.1rem;">Your Bookings</h2>
+        <div id="bookingsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/repairs.js"></script>
+</body>
+</html>
