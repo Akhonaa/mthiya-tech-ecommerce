@@ -1,5 +1,5 @@
 renderNavbar();
-
+renderFooter();
 if (!getToken()) {
   window.location.href = "/login.html";
 }

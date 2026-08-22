@@ -1,4 +1,5 @@
 renderNavbar();
+renderFooter();
 
 const grid = document.getElementById("productGrid");
 const trendingRow = document.getElementById("trendingRow");

@@ -1,4 +1,5 @@
 renderNavbar();
+renderFooter();
 
 const wrapper = document.getElementById("statusWrapper");
 

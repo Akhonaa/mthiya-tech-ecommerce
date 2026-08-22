@@ -1,4 +1,5 @@
 renderNavbar();
+renderFooter();
 
 if (!getToken()) {
   showToast("Please log in to book a repair");

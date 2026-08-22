@@ -73,6 +73,27 @@
       font-size: 0.82rem;
     }
     td.issue-cell { max-width: 220px; font-size: 0.85rem; color: var(--text-muted); }
+        .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 420px;
+    }
+    .modal-box h3 { margin-bottom: 1.2rem; font-size: 1.1rem; }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+    .modal-actions .btn { flex: 1; }
   </style>
 </head>
 <body>
@@ -81,7 +102,7 @@
   <div class="container" id="adminContent">
     <div class="page-header">
       <h1>Admin Panel</h1>
-      <p>Manage your product catalog, prices, and inventory.</p>
+      <p>Manage your product catalogue, customer bookings and users.</p>
     </div>
 
     <div class="admin-layout">
@@ -119,7 +140,8 @@
       </div>
 
       <div class="panel">
-        <h2>Product Catalog</h2>
+        <h2>Product Catalogue</h2>
+        <input type="text" id="productSearchInput" placeholder="Search products by name or category..." style="width: 100%; margin-bottom: 1rem; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" />
         <table>
           <thead>
             <tr>
@@ -150,7 +172,89 @@
         <tbody id="bookingsTableBody"></tbody>
       </table>
     </div>
+           <div class="panel" style="margin-top: 2rem;">
+      <h2>Manage Users</h2>
+      <input type="text" id="userSearchInput" placeholder="Search users by name or email..." style="width: 100%; margin-bottom: 1rem; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" />
+
+      <form id="createUserForm" style="display: flex; gap: 0.6rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+        <input type="text" id="newUserName" placeholder="Full name" required style="flex: 1; min-width: 140px; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" />
+        <input type="email" id="newUserEmail" placeholder="Email" required style="flex: 1; min-width: 160px; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" />
+        <input type="password" id="newUserPassword" placeholder="Password" required style="flex: 1; min-width: 140px; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" />
+        <select id="newUserRole" style="padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);">
+          <option value="customer">Customer</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Add User</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Joined</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
   </div>
+
+  
+     <!-- Edit Product Modal -->
+  <div class="modal-overlay" id="editProductModal">
+    <div class="modal-box">
+      <h3>Edit Product</h3>
+      <form id="editProductForm">
+        <input type="hidden" id="editProductId" />
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="editProductName" required />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="editProductDescription" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" id="editProductCategory" />
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="text" id="editProductImageUrl" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelProductEdit">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal-overlay" id="editUserModal">
+    <div class="modal-box">
+      <h3>Edit User</h3>
+      <form id="editUserForm">
+        <input type="hidden" id="editUserId" />
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="editUserName" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="editUserEmail" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelUserEdit">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+      <div id="footer"></div>
 
   <script src="/js/api.js"></script>
   <script src="/js/admin.js"></script>

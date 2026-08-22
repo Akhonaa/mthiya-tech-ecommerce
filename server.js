@@ -7,6 +7,8 @@ const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/orders");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 const bookingRoutes = require("./routes/bookings");
+const userRoutes = require("./routes/users");
+
 
 
 
@@ -32,6 +34,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(notFound);      // catches unmatched routes
 app.use(errorHandler);  // catches everything passed to next(err)

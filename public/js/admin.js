@@ -1,4 +1,5 @@
 renderNavbar();
+renderFooter();
 
 const user = getUser();
 if (!user || user.role !== "admin") {
@@ -20,12 +21,14 @@ function toCents(rand) {
   return Math.round(Number(rand) * 100);
 }
 
+let allProducts = [];
+
 async function loadProducts() {
   try {
-    // Admins should see inactive products too, so request a high limit and filter client-side isn't ideal —
-    // for now this reuses the public endpoint, which only returns active products.
+    // this reuses the public endpoint, which only returns active products.
     const data = await apiFetch("/products?limit=100");
-    renderTable(data.products);
+    allProducts = data.products;
+    renderTable(allProducts);
   } catch (err) {
     tableBody.innerHTML = `<tr><td colspan="5">Failed to load: ${err.message}</td></tr>`;
   }
@@ -47,6 +50,7 @@ function renderTable(products) {
       <td>${p.isActive ? "Active" : "Inactive"}</td>
       <td class="row-actions">
         <button class="save" data-action="save">Save</button>
+        <button data-action="edit">Edit</button>
         <button class="delete" data-action="delete">Remove</button>
       </td>
     </tr>
@@ -63,6 +67,18 @@ async function handleRowAction(btn) {
   const row = btn.closest("tr");
   const id = row.dataset.id;
   const action = btn.dataset.action;
+
+  if (action === "edit") {
+    const product = allProducts.find((p) => p._id === id);
+    if (!product) return;
+    document.getElementById("editProductId").value = product._id;
+    document.getElementById("editProductName").value = product.name;
+    document.getElementById("editProductDescription").value = product.description || "";
+    document.getElementById("editProductCategory").value = product.category;
+    document.getElementById("editProductImageUrl").value = product.imageUrl || "";
+    document.getElementById("editProductModal").classList.add("show");
+    return;
+  }
 
   try {
     if (action === "save") {
@@ -166,3 +182,162 @@ function renderBookingsTable(bookings) {
 }
 
 loadBookings();
+
+const usersTableBody = document.getElementById("usersTableBody");
+let allUsers = [];
+
+
+async function loadUsers() {
+  try {
+    const users = await apiFetch("/users");
+    allUsers = users;
+    renderUsersTable(allUsers);
+  } catch (err) {
+    usersTableBody.innerHTML = `<tr><td colspan="5">Failed to load: ${err.message}</td></tr>`;
+  }
+}
+
+function renderUsersTable(users) {
+  if (users.length === 0) {
+    usersTableBody.innerHTML = `<tr><td colspan="5">No users yet.</td></tr>`;
+    return;
+  }
+
+  usersTableBody.innerHTML = users
+    .map(
+      (u) => `
+    <tr data-id="${u._id}">
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td>${u.role === "admin" ? "Admin" : "Customer"}</td>
+      <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            <td class="row-actions">
+        <button data-action="edit-user">Edit</button>
+        ${
+          u.role === "admin"
+            ? `<button class="delete" data-action="demote">Remove Admin</button>`
+            : `<button class="save" data-action="promote">Make Admin</button>`
+        }
+      </td>
+    </tr>
+  `
+    )
+    .join("");
+
+  usersTableBody.querySelectorAll("button[data-action]").forEach((btn) => {
+    btn.addEventListener("click", () => handleRoleChange(btn));
+  });
+}
+
+async function handleRoleChange(btn) {
+  const row = btn.closest("tr");
+  const id = row.dataset.id;
+
+  if (btn.dataset.action === "edit-user") {
+    const user = allUsers.find((u) => u._id === id);
+    if (!user) return;
+    document.getElementById("editUserId").value = user._id;
+    document.getElementById("editUserName").value = user.name;
+    document.getElementById("editUserEmail").value = user.email;
+    document.getElementById("editUserModal").classList.add("show");
+    return;
+  }
+  const newRole = btn.dataset.action === "promote" ? "admin" : "customer";
+  const confirmMsg =
+    newRole === "admin" ? "Grant this user admin access?" : "Remove admin access from this user?";
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    await apiFetch(`/users/${id}/role`, {
+      method: "PUT",
+      body: JSON.stringify({ role: newRole }),
+    });
+    showToast("User role updated");
+    loadUsers();
+  } catch (err) {
+    showToast(err.message);
+  }
+}
+document.getElementById("createUserForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const body = {
+      name: document.getElementById("newUserName").value,
+      email: document.getElementById("newUserEmail").value,
+      password: document.getElementById("newUserPassword").value,
+      role: document.getElementById("newUserRole").value,
+    };
+    await apiFetch("/users", { method: "POST", body: JSON.stringify(body) });
+    showToast("User created");
+    e.target.reset();
+    loadUsers();
+  } catch (err) {
+    showToast(err.message);
+  }
+});
+document.getElementById("productSearchInput").addEventListener("input", (e) => {
+  const term = e.target.value.toLowerCase();
+  const filtered = allProducts.filter(
+    (p) => p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term)
+  );
+  renderTable(filtered);
+});
+
+document.getElementById("userSearchInput").addEventListener("input", (e) => {
+  const term = e.target.value.toLowerCase();
+  const filtered = allUsers.filter(
+    (u) => u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)
+  );
+  renderUsersTable(filtered);
+});
+// Product edit modal wiring
+document.getElementById("cancelProductEdit").addEventListener("click", () => {
+  document.getElementById("editProductModal").classList.remove("show");
+});
+
+document.getElementById("editProductForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = document.getElementById("editProductId").value;
+  try {
+    await apiFetch(`/products/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        name: document.getElementById("editProductName").value,
+        description: document.getElementById("editProductDescription").value,
+        category: document.getElementById("editProductCategory").value,
+        imageUrl: document.getElementById("editProductImageUrl").value,
+      }),
+    });
+    showToast("Product updated");
+    document.getElementById("editProductModal").classList.remove("show");
+    loadProducts();
+  } catch (err) {
+    showToast(err.message);
+  }
+});
+
+// User edit modal wiring
+document.getElementById("cancelUserEdit").addEventListener("click", () => {
+  document.getElementById("editUserModal").classList.remove("show");
+});
+
+document.getElementById("editUserForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = document.getElementById("editUserId").value;
+  try {
+    await apiFetch(`/users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        name: document.getElementById("editUserName").value,
+        email: document.getElementById("editUserEmail").value,
+      }),
+    });
+    showToast("User updated");
+    document.getElementById("editUserModal").classList.remove("show");
+    loadUsers();
+  } catch (err) {
+    showToast(err.message);
+  }
+});
+loadUsers();

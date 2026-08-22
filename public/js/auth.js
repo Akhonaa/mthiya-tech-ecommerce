@@ -1,4 +1,5 @@
 renderNavbar();
+renderFooter();
 
 let mode = "login"; // or "signup"
 
